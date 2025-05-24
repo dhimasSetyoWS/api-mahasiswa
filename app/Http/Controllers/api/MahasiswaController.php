@@ -17,6 +17,16 @@ class MahasiswaController extends Controller
         $data = Mahasiswa::all();
         return response()->json($data);
     }
+    public function showById($id)
+    {
+        $data = Mahasiswa::find($id);
+        if ($data) {
+            return response()->json($data);
+        }
+        return response()->json([
+            'status' => "Cant't Find Id"
+        ], 400);
+    }
 
     public function store(Request $request)
     {
@@ -37,14 +47,41 @@ class MahasiswaController extends Controller
 
     public function update(Request $request, $id)
     {
-        $mahasiswa  = Mahasiswa::find($id)->update($request->all());
-        if ($mahasiswa) {
+
+        $validated = $request->validate([
+            'nama' => 'sometimes|required|unique:mahasiswa|max:250',
+            'nim' => 'sometimes|required|unique:mahasiswa|max:10',
+            'email' => 'sometimes|required|unique:mahasiswa|max:100'
+        ]);
+
+        if (empty($validated)) {
             return response()->json([
-                'status' => 'Success update',
-                'data' => $mahasiswa
-            ], 201);
+                'status' => 'Error',
+                'message' => 'Tidak ada data yang dikirim.'
+            ], 422);
         }
+
+        $mahasiswa = Mahasiswa::findOrFail($id);
+        $mahasiswa->update($validated);
+
+        return response()->json([
+            'status' => 'Success Update',
+            'data' => $mahasiswa
+        ], 200);
     }
 
-    public function delete($id) {}
+    public function delete($id) {
+        $data = Mahasiswa::find($id);
+        $deletedData = Mahasiswa::destroy($id);
+        if ($deletedData) {
+            return response()->json([
+                'status' => 'Data Deleted',
+                'deleted_data' => $data
+            ]);
+        }else {
+            return response()->json([
+                'status' => 'Invalid',
+            ], 400);
+        }
+    }
 }

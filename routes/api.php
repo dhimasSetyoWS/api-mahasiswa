@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Contoh http://localhost/api/mahasiswa
 
 Route::get('/mahasiswa', [MahasiswaController::class , 'index']); // https://localhost/api/mahasiswa
+Route::get('/mahasiswa/{id}', [MahasiswaController::class , 'showById']);
 Route::post('/mahasiswa', [MahasiswaController::class , 'store']);
 
 Route::match(['put' , 'patch'],'/mahasiswa/{id}' , [MahasiswaController::class , 'update']); // ambil request put dan patch
