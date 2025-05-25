@@ -13,7 +13,7 @@ class MahasiswaRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,8 +23,19 @@ class MahasiswaRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            //
-        ];
+        if ($this->isMethod('post')) {
+            return [
+                'nama' => 'bail|required|unique:mahasiswa|max:250',
+                'nim' => 'required|unique:mahasiswa|max:10',
+                'email' => 'required|unique:mahasiswa|max:100'
+            ];
+        } elseif ($this->isMethod('put') || $this->isMethod('patch')) {
+            return [
+                'nama' => 'sometimes|required|unique:mahasiswa|max:250',
+                'nim' => 'sometimes|required|unique:mahasiswa|max:10',
+                'email' => 'sometimes|required|unique:mahasiswa|max:100'
+            ];
+        }
+        return [];
     }
 }
